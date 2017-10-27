@@ -1,0 +1,50 @@
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  text-transform: inherit;
+}
+
+html {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  padding-bottom: 2rem;
+}
+
+.page-container {
+  min-width: 320px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.errors-container {
+  /* Layout */
+  display:         flex;
+  flex-direction:  column;
+  justify-content: flex-start;
+  align-items:     stretch;
+  /* Cosmetic */
+  white-space:     pre-wrap;
+}
+
+.error-header {
+  color: darkred;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  white-space: initial;
+}
+
+.error-data {
+  color: green;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
