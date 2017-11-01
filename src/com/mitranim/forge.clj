@@ -272,12 +272,13 @@
 (defn- escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. ^String text
-    (replace "&"  "&amp;")
-    (replace "<"  "&lt;")
-    (replace ">"  "&gt;")
-    (replace "\"" "&quot;")
-    (replace "'" "&apos;")))
+  (when text
+    (.. ^String text
+      (replace "&"  "&amp;")
+      (replace "<"  "&lt;")
+      (replace ">"  "&gt;")
+      (replace "\"" "&quot;")
+      (replace "'" "&apos;"))))
 
 (defn- exception-markup
   "Renders exception to HTML markup."
