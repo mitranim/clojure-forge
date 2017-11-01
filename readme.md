@@ -3,6 +3,11 @@
 Support library for Clojure servers built on the [system/component
 pattern](https://github.com/stuartsierra/component) and Ring.
 
+See example project templates:
+
+  * [Clojure with Datomic](https://github.com/Mitranim/clojure-datomic-starter)
+  * [Clojure with Auth0](https://github.com/Mitranim/clojure-auth0-starter)
+
 Plumbing:
 
   * a place to store the system singleton, safe from namespace reloads
