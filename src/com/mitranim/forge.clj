@@ -326,7 +326,7 @@
 (defn- get-header [{headers :headers} header-name]
   (when (seq headers)
     (loop [[[key val] & rest] (seq headers)]
-      (cond (.equalsIgnoreCase ^String header-name (name key)) val
+      (cond (.equalsIgnoreCase (name header-name) (name key)) val
             rest (recur rest)))))
 
 (defn wrap-render-exception
