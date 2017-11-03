@@ -7,7 +7,7 @@
     [clojure.tools.namespace.repl :as ns-tools]
     [clojure.tools.nrepl.middleware.session :as nrepl-session]
     [com.stuartsierra.component :as component]
-    [org.httpkit.server :refer [run-server]]
+    [org.httpkit.server :as srv]
     [hawk.core :as hawk]
     [clj-stacktrace.core :as cs]
     [clj-stacktrace.repl :as csr])
@@ -199,24 +199,22 @@
 
 (def ^:private STOP_TIMEOUT 100)
 
-(defn- next-change [^IRef iref]
-  (let [change (promise)]
-    (add-watch iref
-               (UUID/randomUUID)
-               (fn [key iref _ value]
-                 (remove-watch iref key)
-                 (deliver change value)))
-    change))
-
-(defn- report-status-change
-  "Blocks until #'forge/status changes, then returns a 204 response.
+(defn- status-change-handler
+  "Long polling handler that responds with 204 when #'forge/status changes.
   See also:
     forge/start-status-server!
     forge/wrap-add-refresh-script"
-  [_]
-  @(next-change #'status)
-  {:status 204
-   :headers {"Access-Control-Allow-Origin" "*"}})
+  [request]
+  (let [status-var #'status
+        uuid (UUID/randomUUID)]
+    (srv/with-channel request chan
+      (add-watch status-var uuid
+        (fn [_ _ _ _]
+          (remove-watch status-var uuid)
+          (srv/send! chan
+            {:status 204
+             :headers {"Access-Control-Allow-Origin" "*"}})))
+        (srv/on-close chan (fn [_] (remove-watch status-var uuid))))))
 
 (defn start-status-server!
   "Idempotently starts a server that reports changes in #'forge/status.
@@ -232,7 +230,7 @@
      (alter-var-root #'status-server
       (fn [^HttpServer prev]
         (when prev (.stop prev STOP_TIMEOUT))
-        (-> (run-server report-status-change (merge {:port 0} options))
+        (-> (srv/run-server status-change-handler (merge {:port 0} options))
             meta
             :server))))))
 

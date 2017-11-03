@@ -118,6 +118,6 @@
 
 
 (defn main-dev []
-  (forge/start-development! {:system-symbol 'user/create-system
+  (forge/start-development! {:system-symbol `create-system
                              :source-paths ["dev" "src"]})
-  (forge/reset))
+  (forge/reset-system! create-system))

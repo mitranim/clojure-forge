@@ -13,5 +13,5 @@
   (forge/reset-system! create-system))
 
 (defn main-dev []
-  (forge/start-development! {:system-symbol 'core/create-system})
-  (forge/reset))
+  (forge/start-development! {:system-symbol `create-system})
+  (forge/reset-system! create-system))

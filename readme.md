@@ -93,8 +93,8 @@ Require in code:
   (forge/reset-system! create-system))
 
 (defn main-dev []
-  (forge/start-development! {:system-symbol 'core/create-system})
-  (forge/reset))
+  (forge/start-development! {:system-symbol `create-system})
+  (forge/reset-system! create-system))
 ```
 
 When using Ring, add the middleware that automatically refreshes webpages and
@@ -107,8 +107,8 @@ renders errors:
 Launch your REPL and run an equivalent of this:
 
 ```clj
-(forge/start-development! {:system-symbol 'app.core/create-system})
-(forge/reset)
+(forge/start-development! {:system-symbol `create-system})
+(forge/reset-system! create-system)
 forge/sys
 ```
 
@@ -134,7 +134,7 @@ refresh. Needs to be called once before using `reset`. `start-development!` also
 sets this.
 
 ```clj
-(forge/set-system-symbol! 'app.core/create-system)
+(forge/set-system-symbol! `create-system)
 forge/system-symbol
 ```
 
@@ -163,7 +163,7 @@ change.
 
 ```clj
 ; once
-(forge/start-development! {:system-symbol 'app.core/create-system})
+(forge/start-development! {:system-symbol `create-system})
 (forge/reset)
 ```
 
