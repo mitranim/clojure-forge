@@ -44,7 +44,7 @@
   See also:
     forge/start-development!"
   [value]
-  (alter-var-root #'development? (constantly value)))
+  (.bindRoot #'development? value))
 
 
 (defn set-system-symbol!
@@ -59,7 +59,7 @@
     (forge/set-system-symbol! '<my-namespace>/<create-system>)
     (forge/reset)"
   [sym] {:pre [(or (nil? sym) (symbol? sym))]}
-  (alter-var-root #'system-symbol (constantly sym)))
+  (.bindRoot #'system-symbol sym))
 
 
 
@@ -89,9 +89,9 @@
   [& exprs]
   `(locking #'status
      (try
-       (alter-var-root #'status (constantly (do ~@exprs :ok)))
+       (.bindRoot #'status (do ~@exprs :ok))
        (catch Throwable err#
-         (alter-var-root #'status (constantly err#))
+         (.bindRoot #'status err#)
          (throw err#)))))
 
 
@@ -110,9 +110,6 @@
          (when (:system (ex-data err#))
            (let [~binding (ex-data err#)] ~@catch-block))
          (throw err#)))))
-
-(defmacro ^:private reset-root! [sym expr]
-  `(alter-var-root (var ~sym) (constantly ~expr)))
 
 (defn reset-system!
   "Recreate and restart the system, using the provided constructor.
@@ -155,15 +152,15 @@
         (when sys
           (try-sys (component/stop sys)
             (on-sys-error {sys-partial :system bad-key :system-key}
-              (reset-root! sys (if bad-key (dissoc sys-partial bad-key) sys-partial)))))
+              (.bindRoot #'sys (if bad-key (dissoc sys-partial bad-key) sys-partial)))))
         (try-sys
-          (reset-root! sys sys-next)
-          (reset-root! sys (component/start sys-next))
+          (.bindRoot #'sys sys-next)
+          (.bindRoot #'sys (component/start sys-next))
           (on-sys-error {sys-partial :system}
-            (reset-root! sys sys-partial)
+            (.bindRoot #'sys sys-partial)
             (try-sys (component/stop sys)
               (on-sys-error {sys-partial :system bad-key :system-key}
-                (reset-root! sys (if bad-key (dissoc sys-partial bad-key) sys-partial))))))))))
+                (.bindRoot #'sys (if bad-key (dissoc sys-partial bad-key) sys-partial))))))))))
 
 (defn stop-system! []
   "Stops the system, storing the stopped version into #'forge/sys, and the
