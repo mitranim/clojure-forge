@@ -85,7 +85,7 @@
 
 (defmacro ^:private tracking-status
   "Runs exprs in an implicit do, storing either :ok or exception
-  into #'forge/status. Returns :ok or throws."
+  into #'forge/status. Returns nil or throws."
   [& exprs]
   `(locking #'status
      (try
@@ -224,9 +224,9 @@
   ([] (start-status-server! nil))
   ([options]
    (tracking-status
-     (alter-var-root #'status-server
-      (fn [^HttpServer prev]
-        (when prev (.stop prev STOP_TIMEOUT))
+     (locking #'status-server
+      (when status-server (.stop status-server STOP_TIMEOUT))
+      (.bindRoot #'status-server
         (-> (srv/run-server status-change-handler (merge {:port 0} options))
             meta
             :server))))))
@@ -235,10 +235,9 @@
   "See forge/start-status-server!."
   []
   (tracking-status
-    (alter-var-root #'status-server
-      (fn [^HttpServer prev]
-        (when prev (.stop prev STOP_TIMEOUT))
-        nil))))
+    (locking #'status-server
+      (when status-server (.stop status-server STOP_TIMEOUT))
+      (.bindRoot #'status-server nil))))
 
 
 
@@ -443,19 +442,17 @@ fetch('http://localhost:" port "')
   ([] (start-auto-reload! default-paths))
   ([paths]
    (tracking-status
-     (alter-var-root #'auto-reloader
-      (fn [prev]
-        (when prev (hawk/stop! prev))
-        (hawk/watch! [{:paths paths :handler hawk-reset}]))))))
+     (locking #'auto-reloader
+       (when auto-reloader (hawk/stop! auto-reloader))
+       (.bindRoot #'auto-reloader (hawk/watch! [{:paths paths :handler hawk-reset}]))))))
 
 (defn stop-auto-reload!
   "See forge/start-auto-reload!."
   []
   (tracking-status
-    (alter-var-root #'auto-reloader
-      (fn [prev]
-        (when prev (hawk/stop! prev))
-        nil))))
+    (locking #'auto-reloader
+      (when auto-reloader (hawk/stop! auto-reloader))
+      (.bindRoot #'auto-reloader nil))))
 
 
 

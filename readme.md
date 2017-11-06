@@ -36,6 +36,8 @@ Comparison with [`component.repl`](https://github.com/stuartsierra/component.rep
 
   * automatic code reload
 
+  * background code reload correctly refreshes the REPL
+
   * integrated webserver goodies: auto refresh on system reset, error rendering
 
 Comparison with [`lein-ring`](https://github.com/weavejester/lein-ring):
@@ -50,6 +52,8 @@ Comparison with [`lein-ring`](https://github.com/weavejester/lein-ring):
 
   * code reload involves a system reset, making it easy to redefine background
     activities such as job queues
+
+  * background code reload correctly refreshes the REPL
 
   * code reload works on its own, you don't need a webpage open
 
