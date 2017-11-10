@@ -1,4 +1,4 @@
-(ns user
+(ns repl
   (:use clojure.repl)
   (:require
     [com.mitranim.forge :as forge]
@@ -32,7 +32,7 @@
         "<p>"
           (if-not forge/development?
             (str
-              "Run (user/main-dev) to enable development features such as "
+              "Run (repl/-main-dev) to enable development features such as "
               "auto-restart, auto-refresh and exception rendering.")
             (str
               "Change the code to observe auto-restart and auto-refresh. "
@@ -112,12 +112,12 @@
 
 
 
-(defn main []
+(defn -main []
   (forge/reset-system! create-system))
 
 
 
-(defn main-dev []
+(defn -main-dev []
   (forge/start-development! {:system-symbol `create-system
                              :source-paths ["dev" "src"]})
   (forge/reset-system! create-system))

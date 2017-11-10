@@ -1,4 +1,5 @@
 (ns core
+  (:gen-class)
   (:require
     [com.stuartsierra.component :as component]
     [com.mitranim.forge :as forge]))
@@ -9,9 +10,9 @@
     (start [this] (println "starting") this)
     (stop [this] (println "stopping") this)))
 
-(defn main []
+(defn -main []
   (forge/reset-system! create-system))
 
-(defn main-dev []
+(defn -main-dev []
   (forge/start-development! {:system-symbol `create-system})
   (forge/reset-system! create-system))

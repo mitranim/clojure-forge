@@ -12,7 +12,7 @@
   ]
   :profiles {:dev {:source-paths ["dev" "src"]}}
   :repl-options {:skip-default-init true
-                 :init-ns user
-                 :init (main-dev)}
+                 :init-ns repl
+                 :init (-main-dev)}
   :deploy-repositories [["clojars" {:sign-releases false}]]
 )

@@ -7,9 +7,11 @@
     [com.mitranim/forge "0.1.0"]
   ]
 
-  :main core/main
+  :main core
 
   :repl-options {:skip-default-init true
                  :init-ns core
-                 :init (main-dev)}
+                 :init (-main-dev)}
+
+  :profiles {:uberjar {:aot :all :omit-source true}}
 )

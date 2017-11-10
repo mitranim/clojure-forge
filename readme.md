@@ -83,6 +83,7 @@ Require in code:
 
 ```clj
 (ns core
+  (:gen-class)
   (:require
     [com.mitranim.forge :as forge]
     [com.stuartsierra.component :as component]))
@@ -93,10 +94,10 @@ Require in code:
     (start [this] (println "starting") this)
     (stop [this] (println "stopping") this)))
 
-(defn main []
+(defn -main []
   (forge/reset-system! create-system))
 
-(defn main-dev []
+(defn -main-dev []
   (forge/start-development! {:system-symbol `create-system})
   (forge/reset-system! create-system))
 ```
@@ -194,7 +195,7 @@ component fails to start, the rest won't keep the JVM from shutting down.
 (defn create-system [prev-system]
   (component/system-map))
 
-(defn main []
+(defn -main []
   (try (forge/reset-system! create-system)
     (catch Throwable err
       (shutdown-agents)
