@@ -69,7 +69,7 @@ Add to `project.clj`:
 <!-- [![Clojars Project](https://img.shields.io/clojars/v/com.mitranim/forge.svg)](https://clojars.org/com.mitranim/forge) -->
 
 ```clj
-[com.mitranim/forge "0.1.0-SNAPSHOT"]
+[com.mitranim/forge "0.1.0"]
 ```
 
 Require in code:

@@ -4,7 +4,7 @@
   :dependencies [
     [org.clojure/clojure "1.8.0"]
     [com.stuartsierra/component "0.3.2"]
-    [com.mitranim/forge "0.1.0-SNAPSHOT"]
+    [com.mitranim/forge "0.1.0"]
   ]
 
   :main core/main

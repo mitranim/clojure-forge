@@ -1,4 +1,4 @@
-(defproject com.mitranim/forge "0.1.0-SNAPSHOT"
+(defproject com.mitranim/forge "0.1.0"
   :description "Support library for Clojure servers built on the System/Component pattern"
   :url "https://github.com/Mitranim/clojure-forge"
   :dependencies [
@@ -14,4 +14,5 @@
   :repl-options {:skip-default-init true
                  :init-ns user
                  :init (main-dev)}
+  :deploy-repositories [["clojars" {:sign-releases false}]]
 )
