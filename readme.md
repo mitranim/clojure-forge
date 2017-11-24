@@ -251,6 +251,17 @@ opt a namespace out of "hard" reload into "soft" reload:
 For lower-level stuff, please run `(dir com.mitranim.forge)` and check the
 source; it's annotated and self-explanatory.
 
+## Changelog
+
+### 0.1.1
+
+More reliable webpage reloading. Now uses websockets to avoid a few edge cases
+in long polling.
+
+### 0.1.0
+
+init
+
 ## Misc
 
 Feedback, criticism, suggestions, and pull requests are welcome!

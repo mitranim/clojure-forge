@@ -197,7 +197,8 @@
 (def ^:private STOP_TIMEOUT 100)
 
 (defn- status-change-handler
-  "Long polling handler that responds with 204 when #'forge/status changes.
+  "Handler that sends an empty response when #'forge/status changes.
+  Supports long polling and websockets.
   See also:
     forge/start-status-server!
     forge/wrap-add-refresh-script"
@@ -207,11 +208,14 @@
     (srv/with-channel request chan
       (add-watch status-var uuid
         (fn [_ _ _ _]
-          (remove-watch status-var uuid)
-          (srv/send! chan
-            {:status 204
-             :headers {"Access-Control-Allow-Origin" "*"}})))
-        (srv/on-close chan (fn [_] (remove-watch status-var uuid))))))
+          (let [sent
+                (srv/send!
+                  chan
+                  (if (:websocket? request)
+                    ""
+                    {:status 204 :headers {"Access-Control-Allow-Origin" "*"}}))]
+            (when-not sent (remove-watch status-var uuid)))))
+      (srv/on-close chan (fn [_] (remove-watch status-var uuid))))))
 
 (defn start-status-server!
   "Idempotently starts a server that reports changes in #'forge/status.
@@ -377,15 +381,16 @@
          (refresh-script port)
          (warning-script (str "Status server has invalid port: " port ". "
                               "Probably down or restarting."))))))
-  ([port] (str "
-fetch('http://localhost:" port "')
-  .then(res => {
-    if (res.ok) window.location.reload()
-    else return Promise.reject(res.text())
-  })
-  .catch(() => {
-    " (warning-script "Lost connection to status server. Consider refreshing.") "
-  })
+  ([port] (str  "
+void function() {
+  const ws = new WebSocket('ws://localhost:" port "')
+  ws.onmessage = () => {
+    window.location.reload()
+  }
+  ws.onclose = ws.onerror = () => {
+    "(warning-script "Lost connection to status server. Consider refreshing.")"
+  }
+}()
 ")))
 
 (defn wrap-add-refresh-script

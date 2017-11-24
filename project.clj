@@ -1,4 +1,4 @@
-(defproject com.mitranim/forge "0.1.0"
+(defproject com.mitranim/forge "0.1.1"
   :description "Support library for Clojure servers built on the System/Component pattern"
   :url "https://github.com/Mitranim/clojure-forge"
   :dependencies [

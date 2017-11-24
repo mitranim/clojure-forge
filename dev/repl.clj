@@ -25,6 +25,7 @@
     "<html>"
       "<head>"
         "<link rel='icon' href='data:;base64,=' />"
+        "<title>demo page</title>"
       "</head>"
       "<body style='padding: 1rem; font-family: monospace; max-width: 80ch'>"
         "<p>Status: " forge/status "</p>"
@@ -94,12 +95,12 @@
   component/Lifecycle
   (start [this]
     (when thread (.stop thread))
-    (println "Starting background thread")
+    ; (println "Starting background thread")
     (assoc this :thread
       (doto (new Thread runnable) (.setDaemon true) .start)))
   (stop [this]
     (when thread
-      (println "Stopping background thread")
+      ; (println "Stopping background thread")
       (.stop thread))
     (assoc this :thread nil)))
 
