@@ -82,17 +82,22 @@
     (swap! session refresh-session-ns)))
 
 
+(def ^:private ^:dynamic *tracking* false)
 
 (defmacro ^:private tracking-status
   "Runs exprs in an implicit do, storing either :ok or exception
   into #'forge/status. Returns nil or throws."
   [& exprs]
-  `(locking #'status
-     (try
-       (.bindRoot #'status (do ~@exprs :ok))
-       (catch Throwable err#
-         (.bindRoot #'status err#)
-         (throw err#)))))
+  `(let [run-tracking-status# (fn [] ~@exprs :ok)]
+     (if *tracking*
+       (run-tracking-status#)
+       (binding [*tracking* true]
+         (locking #'status
+           (try
+             (.bindRoot #'status (run-tracking-status#))
+             (catch Throwable err#
+               (.bindRoot #'status err#)
+               (throw err#))))))))
 
 
 

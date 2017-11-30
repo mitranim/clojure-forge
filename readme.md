@@ -253,6 +253,10 @@ source; it's annotated and self-explanatory.
 
 ## Changelog
 
+### 0.1.2
+
+Avoid double status notification on `reset`.
+
 ### 0.1.1
 
 More reliable webpage reloading. Now uses websockets to avoid a few edge cases
