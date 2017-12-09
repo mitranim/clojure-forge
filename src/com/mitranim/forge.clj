@@ -82,9 +82,9 @@
     (swap! session refresh-session-ns)))
 
 
-(def ^:private ^:dynamic *tracking* false)
+(def ^:dynamic *tracking* false)
 
-(defmacro ^:private tracking-status
+(defmacro tracking-status
   "Runs exprs in an implicit do, storing either :ok or exception
   into #'forge/status. Returns nil or throws."
   [& exprs]
@@ -476,7 +476,7 @@ void function() {
     (forge/start-development! {:system-symbol '<my-namespace>/<create-system>})
     (forge/reset)
 
-  For Ring, add forge/wrap-development-features your middleware stack, as an
+  For Ring, add forge/wrap-development-features to your middleware stack, as an
   outer layer.
 
   To customise, copy and modify the source:
