@@ -218,7 +218,7 @@
                   chan
                   (if (:websocket? request)
                     ""
-                    {:status 204 :headers {"Access-Control-Allow-Origin" "*"}}))]
+                    {:status 204 :headers {"access-control-allow-origin" "*"}}))]
             (when-not sent (remove-watch status-var uuid)))))
       (srv/on-close chan (fn [_] (remove-watch status-var uuid))))))
 
@@ -355,13 +355,13 @@
 
 (defn- warning-popup [text]
   (apply str
-    "<div id='forgeRefreshContainer' class='forge-refresh-container' style='"
+    "<div id='forge-refresh-container' class='forge-refresh-container' style='"
       "position: fixed; bottom: 1rem; left: 1rem; margin-right: 1rem; padding: 0; "
       "font-family: monospace; "
       "display: flex; flex-direction: row; align-items: stretch; "
       "background-color: lightgoldenrodyellow; box-shadow: 0 0 3px -1px gray;'>"
-      "<span style='padding: 1rem'>"(escape-html text)"</span>"
-      "<button onclick='forgeRefreshContainer.remove()' style='"
+      "<span style='padding: 1rem'>" (escape-html text) "</span>"
+      "<button onclick='document.getElementById(\"forge-refresh-container\").remove()' style='"
         "padding: 1rem; cursor: pointer; font-family: inherit; "
         "font-size: inherit; border: none; background-color: khaki; "
         "line-height: inherit;'>"
@@ -377,25 +377,23 @@
 (defn- refresh-script
   "Creates a script that connects to #'forge/status-server, reloading the
   page when #'forge/status changes, i.e. on code reload or system restart."
-  ([]
+  ([request]
    (if (not status-server)
      (warning-script (str "Status server not found. Make sure to call "
                           "forge/start-status-server! in your main function."))
      (let [port (.getPort status-server)]
        (if (and (integer? port) (> port 0))
-         (refresh-script port)
+         (refresh-script request port)
          (warning-script (str "Status server has invalid port: " port ". "
                               "Probably down or restarting."))))))
-  ([port] (str  "
-void function() {
-  const ws = new WebSocket('ws://localhost:" port "')
-  ws.onmessage = () => {
-    window.location.reload()
-  }
-  ws.onclose = ws.onerror = () => {
-    "(warning-script "Lost connection to status server. Consider refreshing.")"
-  }
-}()
+  ([request port] (str  "
+window.forgeRefreshSocket = new WebSocket('ws://localhost:" port "')
+forgeRefreshSocket.onmessage = () => {
+  window.location.reload()
+}
+forgeRefreshSocket.onclose = forgeRefreshSocket.onerror = () => {
+  "(warning-script "Lost connection to status server. Consider refreshing.")"
+}
 ")))
 
 (defn wrap-add-refresh-script
@@ -407,12 +405,14 @@ void function() {
   [handler]
   (fn [request]
     (let [response (handler request)
-          html? (str-includes? (get-header response "content-type") "text/html")]
-      (cond (and html? (string? (:body response)))
-            (update response :body str "<script>" (refresh-script) "</script>")
+          html? (str-includes? (get-header response "content-type") "text/html")
+          localhost? (= (:server-name request) "localhost")]
+      (cond (not localhost?) response
+            (and html? (string? (:body response)))
+            (update response :body str "<script>" (refresh-script request) "</script>")
             ; probably hiccup markup
             (and html? (vector? (:body response)))
-            (update response :body conj "<script>" (refresh-script) "</script>")
+            (update response :body conj "<script>" (refresh-script request) "</script>")
             :else response))))
 
 
@@ -506,7 +506,7 @@ void function() {
   See java.util.Properties for accepted syntax.
 
   Usage:
-    (def env (merge {} (System/getenv) (forge/read-props \".env\")))
+    (def env (merge {} (System/getenv) (forge/read-props \".env.properties\")))
 
   Compile-time validation:
     (defmacro getenv [key] (forge/get-strict env key))
@@ -520,7 +520,7 @@ void function() {
   "Reads a map property, throwing an exception if it's missing.
   Use with forge/read-props to validate env properties."
   [map key]
-  (when-not (contains? map key)
+  (when-not (and (map? map) (contains? map key))
     (throw (ex-info (str "property not found: " key)
                     {:type ::property-not-found :key key})))
   (get map key))
