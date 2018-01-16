@@ -355,13 +355,13 @@
 
 (defn- warning-popup [text]
   (apply str
-    "<div id='forge-refresh-container' class='forge-refresh-container' style='"
+    "<div id='forgeRefreshContainer' class='forgeRefreshContainer' style='"
       "position: fixed; bottom: 1rem; left: 1rem; margin-right: 1rem; padding: 0; "
       "font-family: monospace; "
       "display: flex; flex-direction: row; align-items: stretch; "
       "background-color: lightgoldenrodyellow; box-shadow: 0 0 3px -1px gray;'>"
       "<span style='padding: 1rem'>" (escape-html text) "</span>"
-      "<button onclick='document.getElementById(\"forge-refresh-container\").remove()' style='"
+      "<button onclick='document.getElementById(\"forgeRefreshContainer\").remove()' style='"
         "padding: 1rem; cursor: pointer; font-family: inherit; "
         "font-size: inherit; border: none; background-color: khaki; "
         "line-height: inherit;'>"
@@ -387,11 +387,11 @@
          (warning-script (str "Status server has invalid port: " port ". "
                               "Probably down or restarting."))))))
   ([request port] (str  "
-window.forgeRefreshSocket = new WebSocket('ws://localhost:" port "')
+window.forgeRefreshSocket = new WebSocket(`ws://${window.location.hostname}:" port "`)
 forgeRefreshSocket.onmessage = () => {
   window.location.reload()
 }
-forgeRefreshSocket.onclose = forgeRefreshSocket.onerror = () => {
+forgeRefreshSocket.onerror = () => {
   "(warning-script "Lost connection to status server. Consider refreshing.")"
 }
 ")))
