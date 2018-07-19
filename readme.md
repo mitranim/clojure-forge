@@ -8,12 +8,12 @@ See example project templates:
   * [Clojure with Datomic](https://github.com/Mitranim/clojure-datomic-starter)
   * [Clojure with Auth0](https://github.com/Mitranim/clojure-auth0-starter)
 
-Plumbing:
+Provides plumbing:
 
-  * a place to store the system singleton, safe from namespace reloads
-  * shortcuts for lifecycle management: recreate, restart
+  * a place to store the system singleton, safe from namespace reloads (see below)
+  * shortcuts for system lifecycle management: recreate, restart
 
-Smooth development experience:
+Provides a smooth development experience:
 
   * automatic code reload on change
   * automatic system reset on code change
